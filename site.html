@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Nexus Dashboard</title>
+    <style>
+        :root {
+            --primary: #e63946;
+            --light: #f8f9fa;
+            --lighter: #ffffff;
+            --surface: rgba(255, 255, 255, 0.9);
+            --border: rgba(230, 57, 70, 0.3);
+            --text: #212529;
+            --text-secondary: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light) 0%, #f1faee 50%, #ffffff 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #root {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 25px 35px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: var(--primary);
+            color: var(--lighter);
+        }
+
+        .content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 35px;
+            min-height: 400px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <header>
+            <div class="logo">Nexus Dashboard</div>
+            <nav>
+                <ul>
+                    <li><a href="#users" class="nav-link">Пользователи</a></li>
+                    <li><a href="#todos" class="nav-link">Задачи</a></li>
+                    <li><a href="#posts" class="nav-link">Посты</a></li>
+                    <li><a href="#comments" class="nav-link">Комментарии</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <div class="content" id="content">
+            <div class="loading">
+                Загрузка...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const content = document.getElementById('content');
+            content.innerHTML = '<h2>Добро пожаловать в Nexus Dashboard</h2>';
+        });
+    </script>
+</body>
+</html>
