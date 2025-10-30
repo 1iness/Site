@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Nexus Dashboard</title>
     <style>
+        /* Стили из предыдущего коммита остаются без изменений */
         :root {
             --primary: #e63946;
             --light: #f8f9fa;
@@ -119,6 +120,86 @@
     </div>
 
     <script>
+        // API сервис
+        class ApiService {
+            constructor() {
+                this.baseUrl = 'https://jsonplaceholder.typicode.com';
+            }
+
+            async makeRequest(endpoint) {
+                try {
+                    const response = await fetch(`${this.baseUrl}${endpoint}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Error:', error);
+                    return [];
+                }
+            }
+
+            async getUsers() {
+                return this.makeRequest('/users');
+            }
+
+            async getTodos() {
+                return this.makeRequest('/todos');
+            }
+
+            async getPosts() {
+                return this.makeRequest('/posts');
+            }
+
+            async getComments() {
+                return this.makeRequest('/comments');
+            }
+        }
+
+        // Хранилище данных
+        class DataStore {
+            constructor() {
+                this.api = new ApiService();
+                this.localUsers = JSON.parse(localStorage.getItem('localUsers')) || [];
+                this.localTodos = JSON.parse(localStorage.getItem('localTodos')) || [];
+            }
+
+            async getUsers() {
+                const apiUsers = await this.api.getUsers();
+                return [...apiUsers, ...this.localUsers];
+            }
+
+            async getTodos() {
+                const apiTodos = await this.api.getTodos();
+                return [...apiTodos, ...this.localTodos];
+            }
+
+            async getPosts() {
+                return this.api.getPosts();
+            }
+
+            async getComments() {
+                return this.api.getComments();
+            }
+
+            addUser(user) {
+                const newUser = {
+                    id: Date.now(),
+                    ...user
+                };
+                this.localUsers.push(newUser);
+                localStorage.setItem('localUsers', JSON.stringify(this.localUsers));
+                return newUser;
+            }
+
+            addTodo(todo) {
+                const newTodo = {
+                    id: Date.now(),
+                    ...todo
+                };
+                this.localTodos.push(newTodo);
+                localStorage.setItem('localTodos', JSON.stringify(this.localTodos));
+                return newTodo;
+            }
+        }
+
         class Router {
             constructor() {
                 this.routes = {
@@ -129,6 +210,7 @@
                 };
                 
                 this.currentRoute = 'users';
+                this.dataStore = new DataStore();
                 this.init();
             }
 
@@ -163,31 +245,87 @@
                 });
             }
 
-            renderUsers() {
+            async renderUsers() {
                 const content = document.getElementById('content');
-                content.innerHTML = `
-                    <h2>Пользователи</h2>
-                    <div class="user-card">
-                        <h3>Пример пользователя</h3>
-                        <p>Email: example@mail.com</p>
-                    </div>
-                    <p>Функционал пользователей будет добавлен в следующем коммите</p>
-                `;
+                content.innerHTML = '<div class="loading">Загрузка пользователей...</div>';
+                
+                const users = await this.dataStore.getUsers();
+                
+                let usersHTML = '<h2>Пользователи</h2>';
+                
+                users.forEach(user => {
+                    usersHTML += `
+                        <div class="user-card">
+                            <h3>${user.name}</h3>
+                            <p><strong>Email:</strong> ${user.email}</p>
+                            <p><strong>Телефон:</strong> ${user.phone || 'Не указан'}</p>
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = usersHTML;
             }
 
-            renderTodos() {
+            async renderTodos() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<h2>Задачи</h2><p>Функционал задач будет добавлен в следующем коммите</p>';
+                content.innerHTML = '<div class="loading">Загрузка задач...</div>';
+                
+                const todos = await this.dataStore.getTodos();
+                
+                let todosHTML = '<h2>Задачи</h2>';
+                
+                todos.forEach(todo => {
+                    const status = todo.completed ? 'Выполнено' : 'В процессе';
+                    todosHTML += `
+                        <div class="user-card">
+                            <h3>${todo.title}</h3>
+                            <p><strong>Статус:</strong> ${status}</p>
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = todosHTML;
             }
 
-            renderPosts() {
+            async renderPosts() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<h2>Посты</h2><p>Функционал постов будет добавлен в следующем коммите</p>';
+                content.innerHTML = '<div class="loading">Загрузка постов...</div>';
+                
+                const posts = await this.dataStore.getPosts();
+                
+                let postsHTML = '<h2>Посты</h2>';
+                
+                posts.forEach(post => {
+                    postsHTML += `
+                        <div class="user-card">
+                            <h3>${post.title}</h3>
+                            <p>${post.body}</p>
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = postsHTML;
             }
 
-            renderComments() {
+            async renderComments() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<h2>Комментарии</h2><p>Функционал комментариев будет добавлен в следующем коммите</p>';
+                content.innerHTML = '<div class="loading">Загрузка комментариев...</div>';
+                
+                const comments = await this.dataStore.getComments();
+                
+                let commentsHTML = '<h2>Комментарии</h2>';
+                
+                comments.forEach(comment => {
+                    commentsHTML += `
+                        <div class="user-card">
+                            <h3>${comment.name}</h3>
+                            <p><strong>Email:</strong> ${comment.email}</p>
+                            <p>${comment.body}</p>
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = commentsHTML;
             }
 
             renderNotFound() {
