@@ -7,42 +7,96 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Nexus Dashboard</title>
     <style>
+        /* Полный визуал как в исходном файле */
         :root {
             --primary: #e63946;
+            --primary-glow: 0 0 20px rgba(230, 57, 70, 0.5), 0 0 40px rgba(230, 57, 70, 0.3);
+            --secondary: #a4161a;
+            --secondary-glow: 0 0 20px rgba(164, 22, 26, 0.4);
+            --accent: #e5383b;
+            --accent-glow: 0 0 20px rgba(229, 56, 59, 0.4);
+            --danger: #e63946;
+            --danger-glow: 0 0 20px rgba(230, 57, 70, 0.5);
+            --success: #2a9d8f;
+            --warning: #e9c46a;
             --light: #f8f9fa;
             --lighter: #ffffff;
             --surface: rgba(255, 255, 255, 0.9);
             --surface-light: rgba(255, 255, 255, 0.7);
             --border: rgba(230, 57, 70, 0.3);
+            --border-glow: 0 0 10px rgba(230, 57, 70, 0.3);
             --text: #212529;
             --text-secondary: #6c757d;
-            --success: #2a9d8f;
-            --warning: #e9c46a;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 12px 48px rgba(230, 57, 70, 0.2);
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             --border-radius: 16px;
             --border-radius-sm: 8px;
-            --transition: all 0.3s ease;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, var(--light) 0%, #f1faee 50%, #ffffff 100%);
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(230, 57, 70, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(164, 22, 26, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(229, 56, 59, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, var(--light) 0%, #f1faee 50%, #ffffff 100%);
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 50%, rgba(230, 57, 70, 0.03) 100%),
+                linear-gradient(180deg, transparent 70%, rgba(164, 22, 26, 0.03) 100%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         #root {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 20px;
+            position: relative;
         }
 
+        /* Animated grid background */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(230, 57, 70, 0.05) 1px, transparent 1px) 0 0 / 50px 50px,
+                linear-gradient(0deg, rgba(230, 57, 70, 0.05) 1px, transparent 1px) 0 0 / 50px 50px;
+            opacity: 0.1;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -50,14 +104,68 @@
             margin-bottom: 30px;
             padding: 25px 35px;
             background: var(--surface);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: var(--border-radius);
+            box-shadow: var(--shadow), var(--border-glow);
+            animation: slideDown 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+            animation: scanline 3s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes slideDown {
+            from { 
+                transform: translateY(-30px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
         }
 
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             font-size: 32px;
             font-weight: 800;
-            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--primary-glow);
+            position: relative;
+        }
+
+        .logo::before {
+            content: "⟠";
+            font-size: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rotate 10s linear infinite;
+            filter: drop-shadow(0 0 10px var(--primary));
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         nav ul {
@@ -67,6 +175,8 @@
             background: var(--surface-light);
             padding: 8px;
             border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
         }
 
         nav a {
@@ -76,113 +186,255 @@
             padding: 12px 24px;
             border-radius: 50px;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+            border-radius: 50px;
         }
 
         nav a:hover, nav a.active {
-            background: var(--primary);
             color: var(--lighter);
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
         }
 
-        .content {
+        nav a:hover::before, nav a.active::before {
+            opacity: 1;
+            box-shadow: var(--primary-glow);
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 20px 30px;
             background: var(--surface);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: var(--border-radius);
-            padding: 35px;
-            min-height: 400px;
+            box-shadow: var(--shadow), var(--border-glow);
+            animation: fadeIn 0.6s ease-out 0.1s both;
+            position: relative;
+            overflow: hidden;
         }
 
-        .loading {
-            text-align: center;
-            padding: 80px 20px;
+        .breadcrumbs::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, var(--primary), transparent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .breadcrumbs a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            position: relative;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .breadcrumbs a:hover {
+            background: var(--surface-light);
+            transform: translateX(5px);
+            text-shadow: var(--primary-glow);
+        }
+
+        .breadcrumbs span {
+            margin: 0 15px;
             color: var(--text-secondary);
         }
 
-        .user-card, .todo-item {
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: var(--border-radius);
-            background: var(--surface-light);
-            border: 1px solid var(--border);
-            transition: var(--transition);
+        /* Search */
+        .search-container {
+            margin-bottom: 25px;
+            position: relative;
+            animation: fadeIn 0.6s ease-out 0.2s both;
         }
 
-        .user-card:hover, .todo-item:hover {
+        .search-input {
+            width: 100%;
+            padding: 18px 25px 18px 60px;
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            color: var(--text);
+            box-shadow: var(--shadow), var(--border-glow);
+            transition: var(--transition);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2), var(--shadow), var(--primary-glow);
             transform: translateY(-2px);
         }
 
-        .add-user-form, .add-todo-form {
-            background: var(--surface-light);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            margin-bottom: 25px;
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 20px;
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+
+        /* Content */
+        .content {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 35px;
+            box-shadow: var(--shadow), var(--border-glow);
+            min-height: 600px;
+            animation: fadeIn 0.6s ease-out 0.3s both;
+            position: relative;
         }
 
-        .form-row {
+        .content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            opacity: 0.6;
+        }
+
+        /* Cards */
+        .user-card, .todo-item, .post-item, .comment-item {
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            background: var(--surface-light);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card::before, .todo-item::before, .post-item::before, .comment-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(230, 57, 70, 0.1), transparent);
+            transition: var(--transition);
+        }
+
+        .user-card:hover::before, .todo-item:hover::before, .post-item:hover::before, .comment-item:hover::before {
+            left: 100%;
+        }
+
+        .user-card:hover, .todo-item:hover, .post-item:hover, .comment-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover), var(--primary-glow);
+            border-color: var(--primary);
+        }
+
+        .user-card h3, .post-item h3 {
+            color: var(--text);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--text) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-card p, .todo-item p, .post-item p, .comment-item p {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Todo Items */
+        .todo-item {
             display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             gap: 20px;
-            margin-bottom: 20px;
         }
 
-        .form-group {
+        .todo-content {
             flex: 1;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: var(--border-radius-sm);
-            font-size: 16px;
-            background: var(--surface);
-        }
-
-        .checkbox-group {
+        .todo-status {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: var(--primary);
-            color: var(--lighter);
-            border: none;
-            border-radius: var(--border-radius-sm);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
+            gap: 15px;
+            flex-shrink: 0;
         }
 
         .status-badge {
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+            border: 1px solid;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .status-completed {
             background: rgba(42, 157, 143, 0.15);
             color: var(--success);
+            border-color: var(--success);
+            box-shadow: 0 0 10px rgba(42, 157, 143, 0.3);
         }
 
         .status-pending {
             background: rgba(233, 196, 106, 0.15);
             color: var(--warning);
+            border-color: var(--warning);
+            box-shadow: 0 0 10px rgba(233, 196, 106, 0.3);
         }
 
         .todo-item.completed {
@@ -193,92 +445,368 @@
             border-left: 4px solid var(--warning);
         }
 
-        /* Новые стили для поиска и хлебных крошек */
-        .breadcrumbs {
+        .comment-item {
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Forms */
+        .add-user-form, .add-todo-form {
+            background: var(--surface-light);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 35px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            animation: slideUp 0.6s ease-out;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .add-user-form::before, .add-todo-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .add-user-form h3, .add-todo-form h3 {
+            margin-bottom: 25px;
+            color: var(--text);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 15px;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .add-user-form h3::before, .add-todo-form h3::before {
+            content: "+";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--lighter);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 300;
+            box-shadow: var(--primary-glow);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 25px;
             margin-bottom: 25px;
-            padding: 15px 20px;
-            background: var(--surface-light);
-            border-radius: var(--border-radius-sm);
-            border: 1px solid var(--border);
         }
 
-        .breadcrumb-item {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
+        .form-group {
+            flex: 1;
+            margin-bottom: 0;
         }
 
-        .breadcrumb-item.active {
-            color: var(--primary);
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
             font-weight: 600;
+            color: var(--text);
+            font-size: 1.1rem;
+            font-family: 'Orbitron', sans-serif;
         }
 
-        .breadcrumb-separator {
-            color: var(--text-secondary);
-        }
-
-        .search-container {
-            margin-bottom: 25px;
-        }
-
-        .search-input {
+        .form-group input, .form-group textarea, .form-group select {
             width: 100%;
-            padding: 15px 20px;
+            padding: 16px 20px;
             border: 1px solid var(--border);
             border-radius: var(--border-radius-sm);
             font-size: 16px;
             background: var(--surface);
+            backdrop-filter: blur(10px);
+            color: var(--text);
+            transition: var(--transition);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2), var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--lighter);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(230, 57, 70, 0.4), var(--primary-glow);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
             transition: var(--transition);
         }
 
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
+        .btn:hover::before {
+            left: 100%;
         }
 
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(230, 57, 70, 0.6), var(--primary-glow);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, var(--danger) 0%, #c1121f 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4), var(--danger-glow);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 57, 70, 0.6), var(--danger-glow);
+        }
+
+        /* Content Header */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .content-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            text-shadow: var(--primary-glow);
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
             gap: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
         .stat-card {
             background: var(--surface-light);
-            padding: 20px;
+            padding: 25px;
             border-radius: var(--border-radius);
-            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
             text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            min-width: 200px;
         }
 
-        .stat-number {
-            font-size: 2rem;
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover), var(--primary-glow);
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
             font-weight: 800;
-            color: var(--primary);
             margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--primary-glow);
         }
 
         .stat-label {
             color: var(--text-secondary);
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 0.75rem;
+            font-family: 'Orbitron', sans-serif;
         }
 
-        .empty-state {
+        /* Empty States */
+        .no-data {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: var(--text-secondary);
+            animation: fadeIn 0.6s ease-out;
         }
 
-        .empty-state h3 {
-            margin-bottom: 10px;
-            color: var(--text);
+        .no-data-icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+            opacity: 0.5;
+            filter: drop-shadow(0 0 10px var(--primary));
         }
+
+        .no-data h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--text);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--text) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .no-data p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--surface-light);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+            box-shadow: var(--primary-glow);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                gap: 5px;
+                border-radius: var(--border-radius);
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .todo-item {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .todo-status {
+                align-self: flex-start;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            .stat-card {
+                min-width: auto;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+
+        /* Add Orbitron font */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
     </style>
 </head>
 <body>
+    <div class="grid-overlay"></div>
     <div id="root">
         <header>
             <div class="logo">Nexus Dashboard</div>
@@ -292,21 +820,115 @@
             </nav>
         </header>
         
+        <div class="breadcrumbs" id="breadcrumbs">
+            <a href="#users">Главная</a>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-icon">🔍</div>
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск...">
+        </div>
+        
         <div class="content" id="content">
             <div class="loading">
+                <div class="loading-spinner"></div>
                 Загрузка...
             </div>
         </div>
     </div>
 
     <script>
-        // API сервис и DataStore остаются без изменений
+        // Компонентная система
+        class Component {
+            constructor(tag, props = {}) {
+                this.element = document.createElement(tag);
+                
+                if (props.className) {
+                    this.element.className = props.className;
+                }
+                
+                if (props.id) {
+                    this.element.id = props.id;
+                }
+                
+                if (props.text) {
+                    this.element.textContent = props.text;
+                }
+                
+                if (props.html) {
+                    this.element.innerHTML = props.html;
+                }
+                
+                if (props.children) {
+                    props.children.forEach(child => {
+                        if (child instanceof Component) {
+                            this.element.appendChild(child.element);
+                        } else {
+                            this.element.appendChild(child);
+                        }
+                    });
+                }
+                
+                if (props.attrs) {
+                    Object.keys(props.attrs).forEach(key => {
+                        this.element.setAttribute(key, props.attrs[key]);
+                    });
+                }
+                
+                if (props.events) {
+                    Object.keys(props.events).forEach(event => {
+                        this.element.addEventListener(event, props.events[event]);
+                    });
+                }
+                
+                return this.element;
+            }
+        }
+
+        // Утилиты
+        const Utils = {
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+            
+            formatText(text, maxLength = 100) {
+                if (text.length > maxLength) {
+                    return text.substring(0, maxLength) + '...';
+                }
+                return text;
+            }
+        };
+
+        // API сервис
         class ApiService {
             constructor() {
                 this.baseUrl = 'https://jsonplaceholder.typicode.com';
+                this.requestCount = 0;
+                this.lastRequestTime = 0;
             }
 
             async makeRequest(endpoint) {
+                // Ограничение запросов (5 в секунду)
+                const now = Date.now();
+                if (now - this.lastRequestTime < 200) {
+                    this.requestCount++;
+                    if (this.requestCount >= 5) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        this.requestCount = 0;
+                    }
+                } else {
+                    this.requestCount = 1;
+                }
+                this.lastRequestTime = now;
+
                 try {
                     const response = await fetch(`${this.baseUrl}${endpoint}`);
                     return await response.json();
@@ -333,6 +955,7 @@
             }
         }
 
+        // Хранилище данных
         class DataStore {
             constructor() {
                 this.api = new ApiService();
@@ -360,7 +983,7 @@
 
             addUser(user) {
                 const newUser = {
-                    id: Date.now(),
+                    id: Date.now(), // Генерируем уникальный ID
                     ...user
                 };
                 this.localUsers.push(newUser);
@@ -370,15 +993,25 @@
 
             addTodo(todo) {
                 const newTodo = {
-                    id: Date.now(),
+                    id: Date.now(), // Генерируем уникальный ID
                     ...todo
                 };
                 this.localTodos.push(newTodo);
                 localStorage.setItem('localTodos', JSON.stringify(this.localTodos));
                 return newTodo;
             }
+
+            deleteUser(userId) {
+                this.localUsers = this.localUsers.filter(user => user.id !== userId);
+                localStorage.setItem('localUsers', JSON.stringify(this.localUsers));
+                
+                // Удаляем todos пользователя
+                this.localTodos = this.localTodos.filter(todo => todo.userId !== userId);
+                localStorage.setItem('localTodos', JSON.stringify(this.localTodos));
+            }
         }
 
+        // Навигация и роутинг
         class Router {
             constructor() {
                 this.routes = {
@@ -391,29 +1024,79 @@
                 this.currentRoute = 'users';
                 this.dataStore = new DataStore();
                 this.searchTerm = '';
+                
                 this.init();
             }
 
             init() {
                 window.addEventListener('hashchange', this.handleHashChange.bind(this));
                 this.handleHashChange();
+                
+                // Обработчик поиска
+                const searchInput = document.getElementById('searchInput');
+                const debouncedSearch = Utils.debounce(this.handleSearch.bind(this), 300);
+                searchInput.addEventListener('input', debouncedSearch);
             }
 
             handleHashChange() {
-                const hash = window.location.hash.substring(1) || 'users';
-                this.currentRoute = hash;
-                this.searchTerm = '';
+                const hash = window.location.hash.substring(1);
+                // Извлекаем базовый маршрут без параметров
+                const baseRoute = hash.split('?')[0] || 'users';
+                this.currentRoute = baseRoute;
                 this.render();
             }
 
-            render() {
+            handleSearch(e) {
+                this.searchTerm = e.target.value.toLowerCase();
+                this.render();
+            }
+
+            async render() {
+                this.updateBreadcrumbs();
                 this.updateActiveNav();
                 
                 if (this.routes[this.currentRoute]) {
-                    this.routes[this.currentRoute]();
+                    await this.routes[this.currentRoute]();
                 } else {
                     this.renderNotFound();
                 }
+            }
+
+            updateBreadcrumbs() {
+                const breadcrumbs = document.getElementById('breadcrumbs');
+                const hash = window.location.hash.substring(1);
+                
+                let breadcrumbHTML = '<a href="#users">Главная</a>';
+                
+                if (hash) {
+                    const parts = hash.split('?')[0].split('/');
+                    
+                    parts.forEach((part, index) => {
+                        if (part) {
+                            const route = parts.slice(0, index + 1).join('/');
+                            const name = this.getRouteName(part);
+                            
+                            if (index < parts.length - 1) {
+                                breadcrumbHTML += `<span> / </span><a href="#${route}">${name}</a>`;
+                            } else {
+                                breadcrumbHTML += `<span> / </span>${name}`;
+                            }
+                        }
+                    });
+                }
+                
+                breadcrumbs.innerHTML = breadcrumbHTML;
+            }
+
+            getRouteName(route) {
+                const names = {
+                    'users': 'Пользователи',
+                    'todos': 'Задачи',
+                    'posts': 'Посты',
+                    'comments': 'Комментарии'
+                };
+                
+                return names[route] || route;
             }
 
             updateActiveNav() {
@@ -426,70 +1109,51 @@
                 });
             }
 
-            renderBreadcrumbs() {
-                const routeNames = {
-                    'users': 'Пользователи',
-                    'todos': 'Задачи',
-                    'posts': 'Посты',
-                    'comments': 'Комментарии'
-                };
-
-                return `
-                    <div class="breadcrumbs">
-                        <a href="#users" class="breadcrumb-item">Главная</a>
-                        <span class="breadcrumb-separator">/</span>
-                        <span class="breadcrumb-item active">${routeNames[this.currentRoute]}</span>
-                    </div>
-                `;
-            }
-
-            renderSearch(placeholder) {
-                return `
-                    <div class="search-container">
-                        <input 
-                            type="text" 
-                            class="search-input" 
-                            placeholder="${placeholder}" 
-                            value="${this.searchTerm}"
-                            id="searchInput"
-                        >
-                    </div>
-                `;
-            }
-
-            filterItems(items, searchFields) {
-                if (!this.searchTerm) return items;
-                
-                const term = this.searchTerm.toLowerCase();
-                return items.filter(item => 
-                    searchFields.some(field => 
-                        String(item[field]).toLowerCase().includes(term)
-                    )
-                );
-            }
-
             async renderUsers() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<div class="loading">Загрузка пользователей...</div>';
+                content.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Загрузка пользователей...
+                    </div>
+                `;
                 
                 const users = await this.dataStore.getUsers();
-                const filteredUsers = this.filterItems(users, ['name', 'email', 'phone']);
+                let filteredUsers = users;
+                
+                if (this.searchTerm) {
+                    filteredUsers = users.filter(user => 
+                        user.name.toLowerCase().includes(this.searchTerm) || 
+                        user.email.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
+                if (filteredUsers.length === 0) {
+                    content.innerHTML = `
+                        <div class="no-data">
+                            <div class="no-data-icon">👥</div>
+                            <h3>Пользователи не найдены</h3>
+                            <p>Попробуйте изменить поисковый запрос</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
                 let usersHTML = `
-                    ${this.renderBreadcrumbs()}
+                    <div class="content-header">
+                        <h2 class="content-title">Пользователи</h2>
+                    </div>
                     
-                    <div class="stats-container">
+                    <div class="stats">
                         <div class="stat-card">
-                            <div class="stat-number">${users.length}</div>
+                            <div class="stat-value">${filteredUsers.length}</div>
                             <div class="stat-label">Всего пользователей</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">${this.localUsers.length}</div>
-                            <div class="stat-label">Локальных пользователей</div>
+                            <div class="stat-value">${filteredUsers.filter(u => u.id > 1000).length}</div>
+                            <div class="stat-label">Локальные пользователи</div>
                         </div>
                     </div>
-                    
-                    ${this.renderSearch('Поиск по имени, email или телефону...')}
                     
                     <div class="add-user-form">
                         <h3>Добавить пользователя</h3>
@@ -509,30 +1173,28 @@
                     <div class="users-list">
                 `;
                 
-                if (filteredUsers.length === 0) {
+                filteredUsers.forEach(user => {
+                    const isLocal = user.id > 1000;
                     usersHTML += `
-                        <div class="empty-state">
-                            <h3>Пользователи не найдены</h3>
-                            <p>Попробуйте изменить поисковый запрос</p>
+                        <div class="user-card">
+                            <h3>${user.name}</h3>
+                            <p><strong>Email:</strong> ${user.email}</p>
+                            <p><strong>Телефон:</strong> ${user.phone || 'Не указан'}</p>
+                            <p><strong>Вебсайт:</strong> ${user.website || 'Не указан'}</p>
+                            <p><strong>Компания:</strong> ${user.company?.name || 'Не указана'}</p>
+                            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                                <a href="#todos?userId=${user.id}" class="btn" style="padding: 10px 20px; font-size: 14px;">Задачи</a>
+                                <a href="#posts?userId=${user.id}" class="btn" style="padding: 10px 20px; font-size: 14px;">Посты</a>
+                            </div>
+                            ${isLocal ? `<button class="delete-btn" data-user-id="${user.id}">Удалить пользователя</button>` : ''}
                         </div>
                     `;
-                } else {
-                    filteredUsers.forEach(user => {
-                        usersHTML += `
-                            <div class="user-card">
-                                <h3>${user.name}</h3>
-                                <p><strong>Email:</strong> ${user.email}</p>
-                                <p><strong>Телефон:</strong> ${user.phone || 'Не указан'}</p>
-                                <p><strong>Вебсайт:</strong> ${user.website || 'Не указан'}</p>
-                            </div>
-                        `;
-                    });
-                }
+                });
                 
                 usersHTML += '</div>';
                 content.innerHTML = usersHTML;
                 
-                // Обработчики
+                // Обработчики событий
                 document.getElementById('addUserBtn').addEventListener('click', () => {
                     const name = document.getElementById('userName').value;
                     const email = document.getElementById('userEmail').value;
@@ -541,45 +1203,81 @@
                         this.dataStore.addUser({ name, email });
                         document.getElementById('userName').value = '';
                         document.getElementById('userEmail').value = '';
-                        this.renderUsers();
+                        this.render();
                     } else {
                         alert('Пожалуйста, заполните все поля');
                     }
                 });
-
-                document.getElementById('searchInput').addEventListener('input', (e) => {
-                    this.searchTerm = e.target.value;
-                    this.renderUsers();
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const userId = parseInt(e.target.getAttribute('data-user-id'));
+                        if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
+                            this.dataStore.deleteUser(userId);
+                            this.render();
+                        }
+                    });
                 });
             }
 
             async renderTodos() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<div class="loading">Загрузка задач...</div>';
+                const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+                const userId = urlParams.get('userId');
+                
+                content.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Загрузка задач...
+                    </div>
+                `;
                 
                 const todos = await this.dataStore.getTodos();
-                const filteredTodos = this.filterItems(todos, ['title']);
-                const completedCount = todos.filter(todo => todo.completed).length;
+                let filteredTodos = todos;
+                
+                if (userId) {
+                    filteredTodos = todos.filter(todo => todo.userId == userId);
+                }
+                
+                if (this.searchTerm) {
+                    filteredTodos = filteredTodos.filter(todo => 
+                        todo.title.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
+                if (filteredTodos.length === 0) {
+                    content.innerHTML = `
+                        <div class="no-data">
+                            <div class="no-data-icon">📝</div>
+                            <h3>Задачи не найдены</h3>
+                            <p>Попробуйте изменить поисковый запрос</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const completedCount = filteredTodos.filter(t => t.completed).length;
+                const pendingCount = filteredTodos.filter(t => !t.completed).length;
                 
                 let todosHTML = `
-                    ${this.renderBreadcrumbs()}
+                    <div class="content-header">
+                        <h2 class="content-title">Задачи</h2>
+                    </div>
                     
-                    <div class="stats-container">
+                    <div class="stats">
                         <div class="stat-card">
-                            <div class="stat-number">${todos.length}</div>
+                            <div class="stat-value">${filteredTodos.length}</div>
                             <div class="stat-label">Всего задач</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">${completedCount}</div>
+                            <div class="stat-value">${completedCount}</div>
                             <div class="stat-label">Выполнено</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">${todos.length - completedCount}</div>
+                            <div class="stat-value">${pendingCount}</div>
                             <div class="stat-label">В процессе</div>
                         </div>
                     </div>
-                    
-                    ${this.renderSearch('Поиск по названию задачи...')}
                     
                     <div class="add-todo-form">
                         <h3>Добавить задачу</h3>
@@ -597,157 +1295,191 @@
                     <div class="todos-list">
                 `;
                 
-                if (filteredTodos.length === 0) {
+                filteredTodos.forEach(todo => {
+                    const statusClass = todo.completed ? 'completed' : 'pending';
+                    const statusText = todo.completed ? 'Выполнено' : 'В процессе';
+                    
                     todosHTML += `
-                        <div class="empty-state">
-                            <h3>Задачи не найдены</h3>
-                            <p>Попробуйте изменить поисковый запрос</p>
+                        <div class="todo-item ${statusClass}">
+                            <div class="todo-content">
+                                <h3>${Utils.formatText(todo.title, 60)}</h3>
+                                <p>ID пользователя: ${todo.userId}</p>
+                            </div>
+                            <div class="todo-status">
+                                <span class="status-badge status-${todo.completed ? 'completed' : 'pending'}">${statusText}</span>
+                            </div>
                         </div>
                     `;
-                } else {
-                    filteredTodos.forEach(todo => {
-                        const statusClass = todo.completed ? 'completed' : 'pending';
-                        const statusText = todo.completed ? 'Выполнено' : 'В процессе';
-                        
-                        todosHTML += `
-                            <div class="todo-item ${statusClass}">
-                                <h3>${todo.title}</h3>
-                                <p><strong>Статус:</strong> 
-                                    <span class="status-badge status-${todo.completed ? 'completed' : 'pending'}">
-                                        ${statusText}
-                                    </span>
-                                </p>
-                            </div>
-                        `;
-                    });
-                }
+                });
                 
                 todosHTML += '</div>';
                 content.innerHTML = todosHTML;
                 
-                // Обработчики
+                // Обработчики событий
                 document.getElementById('addTodoBtn').addEventListener('click', () => {
                     const title = document.getElementById('todoTitle').value;
                     const completed = document.getElementById('todoCompleted').checked;
                     
                     if (title) {
-                        this.dataStore.addTodo({ title, completed, userId: 1 });
+                        this.dataStore.addTodo({ 
+                            title, 
+                            completed, 
+                            userId: userId || 1 
+                        });
                         document.getElementById('todoTitle').value = '';
                         document.getElementById('todoCompleted').checked = false;
-                        this.renderTodos();
+                        this.render();
                     } else {
                         alert('Пожалуйста, введите название задачи');
                     }
-                });
-
-                document.getElementById('searchInput').addEventListener('input', (e) => {
-                    this.searchTerm = e.target.value;
-                    this.renderTodos();
                 });
             }
 
             async renderPosts() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<div class="loading">Загрузка постов...</div>';
+                const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+                const userId = urlParams.get('userId');
                 
-                const posts = await this.dataStore.getPosts();
-                const filteredPosts = this.filterItems(posts, ['title', 'body']);
-                
-                let postsHTML = `
-                    ${this.renderBreadcrumbs()}
-                    
-                    <div class="stats-container">
-                        <div class="stat-card">
-                            <div class="stat-number">${posts.length}</div>
-                            <div class="stat-label">Всего постов</div>
-                        </div>
+                content.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Загрузка постов...
                     </div>
-                    
-                    ${this.renderSearch('Поиск по заголовку или содержимому...')}
                 `;
                 
+                const posts = await this.dataStore.getPosts();
+                let filteredPosts = posts;
+                
+                if (userId) {
+                    filteredPosts = posts.filter(post => post.userId == userId);
+                }
+                
+                if (this.searchTerm) {
+                    filteredPosts = filteredPosts.filter(post => 
+                        post.title.toLowerCase().includes(this.searchTerm) || 
+                        post.body.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
                 if (filteredPosts.length === 0) {
-                    postsHTML += `
-                        <div class="empty-state">
+                    content.innerHTML = `
+                        <div class="no-data">
+                            <div class="no-data-icon">📰</div>
                             <h3>Посты не найдены</h3>
                             <p>Попробуйте изменить поисковый запрос</p>
                         </div>
                     `;
-                } else {
-                    filteredPosts.forEach(post => {
-                        postsHTML += `
-                            <div class="user-card">
-                                <h3>${post.title}</h3>
-                                <p>${post.body}</p>
-                            </div>
-                        `;
-                    });
+                    return;
                 }
                 
+                let postsHTML = `
+                    <div class="content-header">
+                        <h2 class="content-title">Посты</h2>
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-value">${filteredPosts.length}</div>
+                            <div class="stat-label">Всего постов</div>
+                        </div>
+                    </div>
+                    
+                    <div class="posts-list">
+                `;
+                
+                filteredPosts.forEach(post => {
+                    postsHTML += `
+                        <div class="post-item">
+                            <h3>${Utils.formatText(post.title, 80)}</h3>
+                            <p>${Utils.formatText(post.body, 150)}</p>
+                            <div style="margin-top: 20px;">
+                                <a href="#comments?postId=${post.id}" class="btn" style="padding: 10px 20px; font-size: 14px;">Комментарии</a>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                postsHTML += '</div>';
                 content.innerHTML = postsHTML;
-
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.addEventListener('input', (e) => {
-                        this.searchTerm = e.target.value;
-                        this.renderPosts();
-                    });
-                }
             }
 
             async renderComments() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<div class="loading">Загрузка комментариев...</div>';
+                const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+                const postId = urlParams.get('postId');
                 
-                const comments = await this.dataStore.getComments();
-                const filteredComments = this.filterItems(comments, ['name', 'email', 'body']);
-                
-                let commentsHTML = `
-                    ${this.renderBreadcrumbs()}
-                    
-                    <div class="stats-container">
-                        <div class="stat-card">
-                            <div class="stat-number">${comments.length}</div>
-                            <div class="stat-label">Всего комментариев</div>
-                        </div>
+                content.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Загрузка комментариев...
                     </div>
-                    
-                    ${this.renderSearch('Поиск по имени, email или содержимому...')}
                 `;
                 
+                const comments = await this.dataStore.getComments();
+                let filteredComments = comments;
+                
+                if (postId) {
+                    filteredComments = comments.filter(comment => comment.postId == postId);
+                }
+                
+                if (this.searchTerm) {
+                    filteredComments = filteredComments.filter(comment => 
+                        comment.name.toLowerCase().includes(this.searchTerm) || 
+                        comment.body.toLowerCase().includes(this.searchTerm) ||
+                        comment.email.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
                 if (filteredComments.length === 0) {
-                    commentsHTML += `
-                        <div class="empty-state">
+                    content.innerHTML = `
+                        <div class="no-data">
+                            <div class="no-data-icon">💬</div>
                             <h3>Комментарии не найдены</h3>
                             <p>Попробуйте изменить поисковый запрос</p>
                         </div>
                     `;
-                } else {
-                    filteredComments.forEach(comment => {
-                        commentsHTML += `
-                            <div class="user-card">
-                                <h3>${comment.name}</h3>
-                                <p><strong>Email:</strong> ${comment.email}</p>
-                                <p>${comment.body}</p>
-                            </div>
-                        `;
-                    });
+                    return;
                 }
                 
+                let commentsHTML = `
+                    <div class="content-header">
+                        <h2 class="content-title">Комментарии</h2>
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-value">${filteredComments.length}</div>
+                            <div class="stat-label">Всего комментариев</div>
+                        </div>
+                    </div>
+                    
+                    <div class="comments-list">
+                `;
+                
+                filteredComments.forEach(comment => {
+                    commentsHTML += `
+                        <div class="comment-item">
+                            <h3>${Utils.formatText(comment.name, 60)}</h3>
+                            <p><strong>Email:</strong> ${comment.email}</p>
+                            <p>${Utils.formatText(comment.body, 120)}</p>
+                        </div>
+                    `;
+                });
+                
+                commentsHTML += '</div>';
                 content.innerHTML = commentsHTML;
-
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.addEventListener('input', (e) => {
-                        this.searchTerm = e.target.value;
-                        this.renderComments();
-                    });
-                }
             }
 
             renderNotFound() {
                 const content = document.getElementById('content');
-                content.innerHTML = '<h2>Страница не найдена</h2>';
+                content.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">❓</div>
+                        <h3>Страница не найдена</h3>
+                        <p>Запрашиваемая страница не существует</p>
+                        <a href="#users" class="btn" style="margin-top: 20px;">Вернуться на главную</a>
+                    </div>
+                `;
             }
         }
 
